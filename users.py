@@ -18,35 +18,72 @@ class USER:
         else:
             self.playlists[name].append(link)
 
-    def del_playlist(self, name, i=-1):
+
+    def add_track(self, link, name):
+        if not(name in self.playlists):
+            self.playlists[name] = link
+
+    def del_track(self, i=-1, name=None):
         if i == -1:
             del self.playlists[name]
+        numbers_= [u+1 for u in range(len(self.playlists))]
         if i >= 0 and i - 1 < len(self.playlists):
-            self.playlists[name].pop(i-1)
+            for el, j in zip(self.playlists, numbers_):
+                if j == i:
+                    del self.playlists[el]
+                    break
 
-    def get_playlist_size(self):
+
+
+    def get_track_number(self):
         return len(self.playlists)
 
     def get_id(self):
         return self.id
 
     def get_name_track(self):
+        if len(self.playlists) == 0:
+            return 'Ваш плейлист пуст!'
         s = ''
-        for k in self.playlists:
-            s += str(k) + ' =='
-            for links in self.playlists[k]:
-                s+=' ' + links
-            s+= ','
+        numbers_ = [i+1 for i in range(len(self.playlists))]
+        for k, i in zip(self.playlists, numbers_):
+            s += str(i) + ') ' + str(k) + '\n'
         return s
+
+
+    def get_track(self, number):
+        if number - 1 < len(self.playlists):
+            numbers_ = [i + 1 for i in range(len(self.playlists))]
+            for k, i in zip(self.playlists, numbers_):
+                if i == number:
+                    return self.playlists[k]
+
+
+    def cache_user(self):
+        s = self.id
+        for name_track in self.playlists:
+            s += '**' + name_track + '**' + self.playlists[name_track]
+        return s
+
+
+def read_user(line):
+    s = line[:-1].split('**')
+    u = USER(s[0])
+    for i in range(1, len(s), 2):
+        u.add_track(s[i+1], s[i])
+    return u
 
 
 if __name__ == '__main__':
     users = {'34': 10}
     u1 = USER('228')
     u2 = USER('228')
-    u1.add_playlist('http||', 'mm')
-    u1.add_playlist('http123123||', 'mm')
-    u1.add_playlist('http123123||', 'second')
+    u1.add_track('http||', 'mm')
+    u1.add_track('http||', 'msada1')
+    #u1.del_track(2)
    #u1.del_playlist('second')
     #u1.del_playlist('mm', 2)
-    print(u2.get_name_track())
+    print(u1.cache_user())
+
+    u3 = read_user('users.txt')
+    print(u3.get_name_track())
